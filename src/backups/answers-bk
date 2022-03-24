@@ -1,0 +1,70 @@
+import React, { Component } from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { Reorder, getItemStyle } from "./utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+const grid = 4;
+export const getListStyle = isDraggingOver => ({
+  background: isDraggingOver ? "lightblue" : "lightgrey",
+  padding: grid,
+  width: 250
+});
+
+const iconStyle = {
+  float: "left"
+};
+
+class Answers extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  // Normally you would want to split things out into separate components.
+  // But in this example everything is just done in one place for simplicity
+  render() {
+    const { answers, questionId } = this.props;
+    return (
+      <Droppable droppableId="droppable2" type={questionId}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            style={getListStyle(snapshot.isDraggingOver)}
+          >
+            {answers.map((answer, index) => {
+              //console.log(`${questionId}${index}`);
+              return (
+                <Draggable
+                  key={answer.id}
+                  draggableId={`${questionId}${index}`}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      style={getItemStyle(
+                        snapshot.isDragging,
+                        provided.draggableProps.style
+                      )}
+                    >
+                      <span {...provided.dragHandleProps}>
+                        <FontAwesomeIcon
+                          icon={"grip-vertical"}
+                          style={iconStyle}
+                        />
+                      </span>
+                      {answer.content}
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    );
+  }
+}
+
+export default Answers;
